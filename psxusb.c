@@ -107,13 +107,13 @@ static void read_joystick(struct joystick_state *js)
 	cmd = 0x42;
 	transmit(cmd, &byte);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
-	cmd = 0xff;
+	cmd = 0x00;
 	transmit(cmd, &byte);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
-	cmd = 0xff;
+	cmd = 0x00;
 	transmit(cmd, &byte);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
-	cmd = 0xff;
+	cmd = 0x00;
 	transmit(cmd, &byte);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
 
