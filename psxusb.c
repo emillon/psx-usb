@@ -11,8 +11,8 @@
 #define PSX_PIN_ATT PC2
 #define PSX_PIN_CLOCK PC3
 #define DDR DDRC
-#define PORTOUT PORTC
-#define PORTIN PINC
+#define PORT PORTC
+#define PIN PINC
 
 
 #define DELAY_CLOCK_US 50
@@ -40,17 +40,17 @@ static inline void configure_pin_output(int pin)
 
 static inline void signal_up(int pin)
 {
-	PORTOUT |= (1 << pin);
+	PORT |= (1 << pin);
 }
 
 static inline void signal_down(int pin)
 {
-	PORTOUT &= ~(1 << pin);
+	PORT &= ~(1 << pin);
 }
 
 static inline int signal_read(int pin)
 {
-	return (PORTIN & (1 << pin));
+	return (PIN & (1 << pin));
 }
 
 static void setup(void)
