@@ -137,6 +137,7 @@ static void read_joystick(struct joystick_state *js)
 	js->select = data1 & (1 << PSX_SELECT);
 	js->square = data2 & (1 << PSX_SQUARE);
 	js->cross = data2 & (1 << PSX_CROSS);
+	js->circle = data2 & (1 << PSX_CIRCLE);
 	js->triangle = data2 & (1 << PSX_TRIANGLE);
 	js->l1 = data2 & (1 << PSX_L1);
 	js->l2 = data2 & (1 << PSX_L2);
