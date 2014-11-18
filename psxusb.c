@@ -71,9 +71,9 @@ static void setup(void)
 	_delay_ms(1000);
 }
 
-static void transmit(uint8_t in, uint8_t *out)
+static uint8_t transmit(uint8_t in)
 {
-	*out = 0;
+	uint8_t out = 0;
 	for (int i = 0; i < 8 ; i++) {
 		int bit_in = in & (1 << i);
 		if (bit_in) {
@@ -86,13 +86,14 @@ static void transmit(uint8_t in, uint8_t *out)
 		_delay_us(DELAY_CLOCK_US);
 		int bit_out = signal_read(PSX_PIN_DATA);
 		if (bit_out) {
-			*out |= (1 << i);
+			out |= (1 << i);
 		} else {
-			*out &= ~(1 << i);
+			out &= ~(1 << i);
 		}
 		signal_up(PSX_PIN_CLOCK);
 		_delay_us(DELAY_CLOCK_US);
 	}
+	return out;
 }
 
 static void read_joystick(struct joystick_state *js)
@@ -101,20 +102,20 @@ static void read_joystick(struct joystick_state *js)
 
 	print("Read\n");
 	uint8_t cmd = 0x01;
-	uint8_t byte = 0x00;
-	transmit(cmd, &byte);
+	uint8_t byte;
+	byte = transmit(cmd);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
 	cmd = 0x42;
-	transmit(cmd, &byte);
+	byte = transmit(cmd);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
 	cmd = 0x00;
-	transmit(cmd, &byte);
+	byte = transmit(cmd);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
 	cmd = 0x00;
-	transmit(cmd, &byte);
+	byte = transmit(cmd);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
 	cmd = 0x00;
-	transmit(cmd, &byte);
+	byte = transmit(cmd);
 	phex(cmd); print(" -> "); phex(byte); print("\n");
 
 	signal_up(PSX_PIN_ATT);
