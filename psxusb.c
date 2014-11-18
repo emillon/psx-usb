@@ -115,42 +115,47 @@ static uint16_t read_joystick(void)
 	return (data2 << 8) | data1;
 }
 
-static void loop(void)
+static inline void handle_change(uint16_t js, uint16_t last_js, int btn)
+{
+	int was_released = last_js & (1 << btn);
+	int is_pressed = !(js & (1 << btn));
+	if (was_released && is_pressed) {
+		phex(btn);
+		print("\n");
+	}
+}
+
+static uint16_t loop(uint16_t last_js)
 {
 	_delay_ms(16);
 	uint16_t js = read_joystick();
 
-#define P(btn) do { \
-	print(#btn); \
-	if(js & (1 << (PSX_##btn))) { \
-		print("[ ]\n"); \
-	} else { \
-		print("[X]\n"); \
-	} \
-} while(0)
+	if (js != last_js) {
+		handle_change(js, last_js, PSX_UP);
+		handle_change(js, last_js, PSX_DOWN);
+		handle_change(js, last_js, PSX_LEFT);
+		handle_change(js, last_js, PSX_RIGHT);
+		handle_change(js, last_js, PSX_START);
+		handle_change(js, last_js, PSX_SELECT);
+		handle_change(js, last_js, PSX_SQUARE);
+		handle_change(js, last_js, PSX_CROSS);
+		handle_change(js, last_js, PSX_CIRCLE);
+		handle_change(js, last_js, PSX_TRIANGLE);
+		handle_change(js, last_js, PSX_L1);
+		handle_change(js, last_js, PSX_L2);
+		handle_change(js, last_js, PSX_R1);
+		handle_change(js, last_js, PSX_R2);
+	}
 
-	print("\n\nRead\n");
-	P(UP);
-	P(DOWN);
-	P(LEFT);
-	P(RIGHT);
-	P(START);
-	P(SELECT);
-	P(SQUARE);
-	P(CROSS);
-	P(CIRCLE);
-	P(TRIANGLE);
-	P(L1);
-	P(L2);
-	P(R1);
-	P(R2);
+	return js;
 }
 
 int main(void)
 {
 	setup();
+	uint16_t js = 0;
 	while(1){
-		loop();
+		js = loop(js);
 	}
 	return 0;
 }
