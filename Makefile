@@ -4,7 +4,7 @@ MCU = at90usb1286      # Teensy++ 2.0
 
 CFLAGS += -mmcu=$(MCU) -Os -ffunction-sections -Wall -W -std=gnu99
 LDFLAGS += -Wl,-Map=$(TARGET).map,--cref -Wl,--relax -Wl,--gc-sections
-OBJ=psxusb.o
+OBJ=psxusb.o usb_debug_only.o print.o
 
 .PHONY: all clean
 all: $(TARGET).hex
