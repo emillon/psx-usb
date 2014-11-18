@@ -147,7 +147,7 @@ static void read_joystick(struct joystick_state *js)
 
 static void loop(void)
 {
-	_delay_ms(1000);
+	_delay_ms(16);
 	static struct joystick_state js;
 	read_joystick(&js);
 
