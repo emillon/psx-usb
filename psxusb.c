@@ -21,23 +21,54 @@ struct joystick_state {
 	int triangle;
 };
 
+static inline void configure_pin_input(int pin)
+{
+	DDR &= ~(1 << pin);
+}
+
+static inline void configure_pin_output(int pin)
+{
+	DDR |= (1 << pin);
+}
+
+static inline void signal_up(int pin)
+{
+	PORT |= (1 << pin);
+}
+
+static inline void signal_down(int pin)
+{
+	PORT &= ~(1 << pin);
+}
+
 static void setup(void)
 {
-	DDR &= ~(1 << PSX_PIN_DATA);
-	PORT |= (1 << PSX_PIN_DATA); // pullup
+	configure_pin_input(PSX_PIN_DATA);
+	signal_up(PSX_PIN_DATA); // pullup
 
-	DDR |= (1 << PSX_PIN_CMD);
+	configure_pin_output(PSX_PIN_CMD);
 
-	DDR |= (1 << PSX_PIN_ATT);
-	PORT |= (1 << PSX_PIN_ATT);
+	configure_pin_output(PSX_PIN_ATT);
+	signal_up(PSX_PIN_ATT);
 
-	DDR |= (1 << PSX_PIN_CLOCK);
-	PORT |= (1 << PSX_PIN_CLOCK);
+	configure_pin_output(PSX_PIN_CLOCK);
+	signal_up(PSX_PIN_CLOCK);
+}
+
+static void read_joystick(struct joystick_state *js)
+{
+	signal_down(PSX_PIN_ATT);
+
+	// ...
+
+	signal_up(PSX_PIN_ATT);
 }
 
 static void loop(void)
 {
 	_delay_ms(1000);
+	static struct joystick_state js;
+	read_joystick(&js);
 }
 
 int main(void)
