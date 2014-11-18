@@ -129,20 +129,22 @@ static void read_joystick(struct joystick_state *js)
 
 	signal_up(PSX_PIN_ATT);
 
-	js->up = data1 & (1 << PSX_UP);
-	js->down = data1 & (1 << PSX_DOWN);
-	js->left = data1 & (1 << PSX_LEFT);
-	js->right = data1 & (1 << PSX_RIGHT);
-	js->start = data1 & (1 << PSX_START);
-	js->select = data1 & (1 << PSX_SELECT);
-	js->square = data2 & (1 << PSX_SQUARE);
-	js->cross = data2 & (1 << PSX_CROSS);
-	js->circle = data2 & (1 << PSX_CIRCLE);
-	js->triangle = data2 & (1 << PSX_TRIANGLE);
-	js->l1 = data2 & (1 << PSX_L1);
-	js->l2 = data2 & (1 << PSX_L2);
-	js->r1 = data2 & (1 << PSX_R1);
-	js->r2 = data2 & (1 << PSX_R2);
+#define F(f, data, mask) do { js->f = !(data & (1 << mask)); } while(0)
+	F(up, data1, PSX_UP);
+	F(down, data1, PSX_DOWN);
+	F(left, data1, PSX_LEFT);
+	F(right, data1, PSX_RIGHT);
+	F(start, data1, PSX_START);
+	F(select, data1, PSX_SELECT);
+	F(square, data2, PSX_SQUARE);
+	F(cross, data2, PSX_CROSS);
+	F(circle, data2, PSX_CIRCLE);
+	F(triangle, data2, PSX_TRIANGLE);
+	F(l1, data2, PSX_L1);
+	F(l2, data2, PSX_L2);
+	F(r1, data2, PSX_R1);
+	F(r2, data2, PSX_R2);
+#undef F
 }
 
 static void loop(void)
