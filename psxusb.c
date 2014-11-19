@@ -120,7 +120,22 @@ static inline void handle_change(uint16_t js, uint16_t last_js, int btn)
 	int was_released = last_js & (1 << btn);
 	int is_pressed = !(js & (1 << btn));
 	if (was_released && is_pressed) {
-		phex(btn);
+		switch(btn) {
+		case PSX_UP: print("up"); break;
+		case PSX_DOWN: print("down"); break;
+		case PSX_LEFT: print("left"); break;
+		case PSX_RIGHT: print("right"); break;
+		case PSX_START: print("start"); break;
+		case PSX_SELECT: print("select"); break;
+		case PSX_SQUARE: print("square"); break;
+		case PSX_CROSS: print("cross"); break;
+		case PSX_CIRCLE: print("circle"); break;
+		case PSX_TRIANGLE: print("triangle"); break;
+		case PSX_L1: print("l1"); break;
+		case PSX_L2: print("l2"); break;
+		case PSX_R1: print("r1"); break;
+		case PSX_R2: print("r2"); break;
+		}
 		print("\n");
 	}
 }
