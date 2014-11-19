@@ -3,8 +3,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "print.h"
-#include "usb_debug_only.h"
+#include "usb_keyboard.h"
 
 #define PSX_PIN_DATA PC0
 #define PSX_PIN_CMD PC1
@@ -29,6 +28,23 @@
 #define PSX_L1 10
 #define PSX_R2 9
 #define PSX_L2 8
+
+static const int mapping[] = {
+	[PSX_LEFT] = KEY_LEFT,
+	[PSX_DOWN] = KEY_DOWN,
+	[PSX_RIGHT] = KEY_RIGHT,
+	[PSX_UP] = KEY_UP,
+	[PSX_START] = KEY_ENTER,
+	[PSX_SELECT] = KEY_ESC,
+	[PSX_SQUARE] = KEY_H,
+	[PSX_CROSS] = KEY_J,
+	[PSX_CIRCLE] = KEY_K,
+	[PSX_TRIANGLE] = KEY_L,
+	[PSX_L1] = KEY_Y,
+	[PSX_L2] = KEY_U,
+	[PSX_R1] = KEY_I,
+	[PSX_R2] = KEY_O,
+};
 
 #define DELAY_CLOCK_US 50
 
@@ -71,6 +87,7 @@ static void setup(void)
 	signal_up(PSX_PIN_CLOCK);
 
 	usb_init();
+	while (!usb_configured()) /* wait */ ;
 
 	_delay_ms(1000);
 }
@@ -120,23 +137,8 @@ static inline void handle_change(uint16_t js, uint16_t last_js, int btn)
 	int was_released = last_js & (1 << btn);
 	int is_pressed = !(js & (1 << btn));
 	if (was_released && is_pressed) {
-		switch(btn) {
-		case PSX_UP: print("up"); break;
-		case PSX_DOWN: print("down"); break;
-		case PSX_LEFT: print("left"); break;
-		case PSX_RIGHT: print("right"); break;
-		case PSX_START: print("start"); break;
-		case PSX_SELECT: print("select"); break;
-		case PSX_SQUARE: print("square"); break;
-		case PSX_CROSS: print("cross"); break;
-		case PSX_CIRCLE: print("circle"); break;
-		case PSX_TRIANGLE: print("triangle"); break;
-		case PSX_L1: print("l1"); break;
-		case PSX_L2: print("l2"); break;
-		case PSX_R1: print("r1"); break;
-		case PSX_R2: print("r2"); break;
-		}
-		print("\n");
+		int key = mapping[btn];
+		usb_keyboard_press(key, 0);
 	}
 }
 
