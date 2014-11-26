@@ -106,7 +106,6 @@ static uint8_t transmit(uint8_t in)
 		} else {
 			signal_down(PSX_PIN_CMD);
 		}
-		_delay_us(DELAY_CLOCK_US);
 		signal_down(PSX_PIN_CLOCK);
 		_delay_us(DELAY_CLOCK_US);
 		int bit_out = signal_read(PSX_PIN_DATA);
