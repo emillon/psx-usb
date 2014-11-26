@@ -7,7 +7,7 @@
 
 #define PSX_PIN_DATA PC0
 #define PSX_PIN_CMD PC1
-#define PSX_PIN_ATT PC2
+#define PSX_PIN_SEL PC2
 #define PSX_PIN_CLOCK PC3
 #define DDR DDRC
 #define PORT PORTC
@@ -84,8 +84,8 @@ static void setup(void)
 
 	configure_pin_output(PSX_PIN_CMD);
 
-	configure_pin_output(PSX_PIN_ATT);
-	signal_up(PSX_PIN_ATT);
+	configure_pin_output(PSX_PIN_SEL);
+	signal_up(PSX_PIN_SEL);
 
 	configure_pin_output(PSX_PIN_CLOCK);
 	signal_up(PSX_PIN_CLOCK);
@@ -123,7 +123,7 @@ static uint8_t transmit(uint8_t in)
 
 static uint16_t read_joystick(void)
 {
-	signal_down(PSX_PIN_ATT);
+	signal_down(PSX_PIN_SEL);
 
 	transmit(0x01);
 	transmit(0x42);
@@ -131,7 +131,7 @@ static uint16_t read_joystick(void)
 	uint8_t data1 = transmit(0x00);
 	uint8_t data2 = transmit(0x00);
 
-	signal_up(PSX_PIN_ATT);
+	signal_up(PSX_PIN_SEL);
 
 	return (data2 << 8) | data1;
 }
