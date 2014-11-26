@@ -18,6 +18,8 @@
 #define PSX_RIGHT 5
 #define PSX_UP 4
 #define PSX_START 3
+#define PSX_RESERVED2 2
+#define PSX_RESERVED1 1
 #define PSX_SELECT 0
 
 #define PSX_SQUARE 15
@@ -29,7 +31,9 @@
 #define PSX_R2 9
 #define PSX_L2 8
 
-static const int mapping[] = {
+#define KEY_RESERVED(i) ((i) == PSX_RESERVED1 || (i) == PSX_RESERVED2)
+
+static const uint8_t mapping[] = {
 	[PSX_LEFT] = KEY_LEFT,
 	[PSX_DOWN] = KEY_DOWN,
 	[PSX_RIGHT] = KEY_RIGHT,
@@ -132,14 +136,29 @@ static uint16_t read_joystick(void)
 	return (data2 << 8) | data1;
 }
 
-static inline void handle_change(uint16_t js, uint16_t last_js, int btn)
+static inline uint8_t keypress_replace(uint8_t from, uint8_t to)
 {
-	int was_released = last_js & (1 << btn);
-	int is_pressed = !(js & (1 << btn));
-	if (was_released && is_pressed) {
-		int key = mapping[btn];
-		usb_keyboard_press(key, 0);
+	for (int i = 0; i < 6; i++) {
+		if (keyboard_keys[i] == from) {
+			keyboard_keys[i] = to;
+			return 0;
+		}
 	}
+	return -1;
+}
+
+// Store a new key in keyboard_keys.
+// Return -1 on error.
+static uint8_t keypress_add(uint8_t key)
+{
+	return keypress_replace(0, key);
+}
+
+// Remove a key from keyboard_keys.
+// Return -1 on error.
+static uint8_t keypress_remove(uint8_t key)
+{
+	return keypress_replace(key, 0);
 }
 
 static uint16_t loop(uint16_t last_js)
@@ -148,20 +167,21 @@ static uint16_t loop(uint16_t last_js)
 	uint16_t js = read_joystick();
 
 	if (js != last_js) {
-		handle_change(js, last_js, PSX_UP);
-		handle_change(js, last_js, PSX_DOWN);
-		handle_change(js, last_js, PSX_LEFT);
-		handle_change(js, last_js, PSX_RIGHT);
-		handle_change(js, last_js, PSX_START);
-		handle_change(js, last_js, PSX_SELECT);
-		handle_change(js, last_js, PSX_SQUARE);
-		handle_change(js, last_js, PSX_CROSS);
-		handle_change(js, last_js, PSX_CIRCLE);
-		handle_change(js, last_js, PSX_TRIANGLE);
-		handle_change(js, last_js, PSX_L1);
-		handle_change(js, last_js, PSX_L2);
-		handle_change(js, last_js, PSX_R1);
-		handle_change(js, last_js, PSX_R2);
+		for (int i = 0; i < 16 ; i++) {
+			if (KEY_RESERVED(i)) {
+				continue;
+			}
+			int was_pressed = !(last_js & (1 << i));
+			int is_pressed = !(js & (1 << i));
+
+			if (is_pressed && !was_pressed) {
+				keypress_add(mapping[i]);
+			}
+			if (was_pressed && !is_pressed) {
+				keypress_remove(mapping[i]);
+			}
+		}
+		usb_keyboard_send();
 	}
 
 	return js;
